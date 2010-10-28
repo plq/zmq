@@ -1,5 +1,5 @@
 
-This is a shell wrapper for (ZeroMQ)[http://zeromq.org]. Currently it can only 
+This is a shell wrapper for [ZeroMQ](http://zeromq.org). Currently it can only 
 send to a REQ socket.
 
 Building
