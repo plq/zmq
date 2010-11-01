@@ -50,6 +50,20 @@ int get_socket_type(const char *str) {
     return retval;
 }
 
+void recv_multipart(zmq::socket_t &socket) {
+    int64_t more=-1;
+    size_t more_size = sizeof (more);
+    while(more) {
+        zmq::message_t response;
+        socket.recv(&response);
+
+        std::string response_str((const char *)response.data(), response.size());
+        cout << response_str << endl;
+
+        socket.getsockopt(ZMQ_RCVMORE, &more, &more_size);
+    }
+}
+
 int main(int argc, char **argv) {
     if (argc < 3) {
         usage();
@@ -65,7 +79,7 @@ int main(int argc, char **argv) {
         zmq::message_t empty_message;
         socket.send(empty_message);
 
-        socket.recv(&response);
+        recv_multipart(socket);
     }
     else {
         for (int i=3; i<argc; ++i) {
@@ -75,17 +89,7 @@ int main(int argc, char **argv) {
             socket.send(message, ZMQ_SNDMORE && ( (i+1) < argc) );
         }
 
-        int64_t more=-1;
-        size_t more_size = sizeof (more);
-        while(more) {
-            zmq::message_t response;
-            socket.recv(&response);
-
-            std::string response_str((const char *)response.data(), response.size());
-            cout << response_str << endl;
-
-            socket.getsockopt(ZMQ_RCVMORE, &more, &more_size);
-        }
+        recv_multipart(socket);
     }
 
     return 0;
