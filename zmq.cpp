@@ -65,7 +65,6 @@ int main(int argc, char **argv) {
         zmq::message_t empty_message;
         socket.send(empty_message);
 
-        zmq::message_t response;
         socket.recv(&response);
     }
     else {
@@ -73,13 +72,19 @@ int main(int argc, char **argv) {
             size_t arg_len= std::strlen(argv[i]);
             zmq::message_t message(arg_len);
             std::memcpy(message.data(), argv[i], arg_len);
-            socket.send(message);
+            socket.send(message, ZMQ_SNDMORE && ( (i+1) < argc) );
+        }
 
+        int64_t more=-1;
+        size_t more_size = sizeof (more);
+        while(more) {
             zmq::message_t response;
             socket.recv(&response);
 
             std::string response_str((const char *)response.data(), response.size());
             cout << response_str << endl;
+
+            socket.getsockopt(ZMQ_RCVMORE, &more, &more_size);
         }
     }
 
