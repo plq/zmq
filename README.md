@@ -37,3 +37,5 @@ messages can be multipart messages -- zmq sends each argument as a message part
 and prints each part in an incoming message in a new line.
 
 Just like other shell tools, this is mainly for exchanging text-only messages.
+You are advised to switch to more capable languages for dealing with binary
+data.
